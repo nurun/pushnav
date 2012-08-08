@@ -255,9 +255,6 @@
             if( anchor.indexOf("#") >-1 )  {
                 var firstAnchor = anchor.indexOf("#");
                 anchor = anchor.substr(firstAnchor+1,anchor.length);
-                if(anchor.indexOf("swaptarget") <= -1) {
-                    anchor +="?swaptarget=product-section.html";
-                }
                 return anchor;
             }
         };

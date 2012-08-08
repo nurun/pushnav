@@ -855,7 +855,7 @@
             // Query with ?isAjax=true
             if(url_or_hash.indexOf("isAjax=true")>-1 && isSureToBeAHash) {
                 isTraditional = false;
-            } else if( isSureToBeAHash || url_or_hash.indexOf("#")>-1){
+            } else if( url_or_hash.indexOf("isAjax=false")>-1 && isSureToBeAHash){
                 isTraditional= true;
             } else {
                 isTraditional = !(/[\/\?\.]/.test(url_or_hash));

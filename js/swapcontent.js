@@ -120,21 +120,21 @@
     function reEnhanceAjaxLink(currentPageUrl) {
 
         $("a[data-ajax-target]").each(function(index,value){
-            var $this = $(this),
-                oldHref = $(this).attr("href");
-            $this.attr("href",addQueryInURL(oldHref,"isAjax",true));
+                var $this = $(this),
+                    oldHref = $(this).attr("href");
+                $this.attr("href",addQueryInURL(oldHref,{isAjax:true}));
         });
 
-        if(!isModern) {
-            //TODO:
-            // Need to check if they have ? already;
-              $("a[href^='#']").each(function(index,value){
-                 var $this = $(this),
-                 oldHref = $(this).attr("href");
-                 $this.attr("href",oldHref + "?swaptarget="+ getUrlToClean(currentPageUrl));
-             });
-        }
+        $("a[href^='#']").each(function(index,value) {
+            var $this = $(this),
+                currentUrl = getUrlToClean(currentPageUrl),
+                queries = isModern ? {isAjax:false} : {isAjax:false,swaptarget:currentUrl},
+                oldHref = $(this).attr("href").replace("#",""),
+                newUrl;
 
+            newUrl = oldHref != "" ? "#"+ addQueryInURL(oldHref,queries) :  "#"+ getQueryString(queries) ;
+            $this.attr("href",newUrl);
+        });
     }
 
     function loadNewContent(opts) {
@@ -175,32 +175,75 @@
         return urlHtml;
     }
 
+    /**
+     * Replace # by / and remove query or everything begin with /
+     * @param hash {String}
+     * @return {String}
+     */
     function getHashToClean(hash) {
         var hash = hash.replace("#","/").replace(/\?.*/,'');
         return hash;
     }
 
+    /**
+     * Convert Object to QueryString
+     * Ex: var queries= {isAjax:true, swaptarget: "/product-solution.html"}
+     *     Return: ?isAjax=true&swaptarget=/product-solution.html
+     * @param query{Object}:
+     * @return {String}
+     */
+    function getQueryString(query) {
+        var queryString = "?",
+            loopIndex=0;
 
-    function addQueryInURL(url,queryName, queryValue) {
+        $.each(query,function(index,value) {
+            if(loopIndex!=0) {
+                queryString+="&";
+            }
+            queryString+=index+"="+value;
+            loopIndex++;
+        });
+
+        return queryString;
+    }
+
+
+    function addQueryInURL(url,query) {
         var urlParsed = $.url.parse(url),
-            query = new Params (urlParsed);
+            newQuery = new Params (urlParsed);
 
-        query.params[queryName] = queryValue;
+        $.each(query,function(queryName,queryValue) {
+            newQuery.params[queryName] = queryValue;
+        });
 
-        $.extend(urlParsed,query);
+        $.extend(urlParsed,newQuery);
         var newObjUrl = new UrlBuild(urlParsed);
         return $.url.build(newObjUrl);
     }
 
+    /**
+    * Detect if the browser support or not the HTML5 history
+    * @return {Boolean}
+    */
     function isSupportPushState() {
         return !!(window.history && window.history.pushState);
     }
 
 
+    /**
+     * Return all params from a url
+     * @param url{String}: Url that contains Param
+     * @return {String}
+     */
     function getUrlParams(url) {
         return $.url.parse(url).params;
     }
 
+    /**
+     * converts the HTML String in a format that can be converted into jQuery
+     * @param html
+     * @return {String}
+     */
     function getDocumentHtml(html){
         // Prepare
         var result = String(html)
