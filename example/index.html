@@ -1,0 +1,38 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>Common History</title>
+    <link type="text/css" href="../css/style.css" rel="stylesheet" />
+    <script type="text/javascript" src="../js/libs/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="../js/libs/historyjs/history.adapter.jquery.js"></script>
+    <script type="text/javascript" src="../js/libs/historyjs/history.html4.js"></script>
+    <script type="text/javascript" src="../js/libs/historyjs/history.js"></script>
+    <script type="text/javascript" src="../js/libs/historyjs/json2.js"></script>
+    <script type="text/javascript" src="../js/libs/jquery.urldecoder.min.js"></script>
+    <script type="text/javascript" src="../js/libs/enhance.js"></script>
+    <script type="text/javascript" src="../js/common.js"></script>
+</head>
+<body>
+<div class="swapcontent">
+    <h1>Common History</h1>
+    <ul>
+        <li><a href="#tab1?isAjax=false">Traditionnal Anchor</a></li>
+        <li><a href="#question/q1/a/q2/?isAjax=false">Complex Traditionnal Anchor</a></li>
+        <li><a href="description.html" data-ajax-target="#content">Axafiy link</a></li>
+        <li><a href="#" id="replaceState1">ReplaceState Link</a></li>
+        <li><a href="#" id="replaceState2">ReplaceState Link #2</a></li>
+    </ul>
+
+
+    <h2>Ajax Area</h2>
+    <div id="content">
+    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p>
+    </div>
+    <h2>Log</h2>
+    <textarea id="log" style="width:100%;height:400px"></textarea>
+
+    </body>
+</div>
+<script type="text/javascript" src="../js/swapcontent.js"></script>
+</html>

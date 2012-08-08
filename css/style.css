@@ -1,0 +1,16 @@
+body {
+    font-family: Arial;
+    font-size:12px;
+}
+
+p{
+    font-size:12px;
+    font-weight:normal
+}
+
+
+
+#content {
+    border: 1px solid gray;
+    padding:10px;
+}
