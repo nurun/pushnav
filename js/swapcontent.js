@@ -70,7 +70,7 @@
 
     });
 
-    $(window).bind("anchorpage", function(event, params) {
+    $(window).bind("anchorchange", function(event, params) {
         History.log('Hash change:', State.data, State.title, State.url);
         var newUrl;
             // We only need to target for not modern browser
