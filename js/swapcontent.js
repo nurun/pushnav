@@ -204,7 +204,7 @@
             loopIndex++;
         });
 
-        return queryString;
+        return encodeURI(queryString);
     }
 
 
