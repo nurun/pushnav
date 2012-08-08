@@ -459,7 +459,7 @@
 
                     // Force update of the title
                     // History.setTitle(newState);
-                    History.Adapter.trigger(window,'anchorpage');
+                    History.Adapter.trigger(window,'anchorchange');
                     //History.Adapter.trigger(window,'statechange');
                     History.busy(false);
                     return false;
