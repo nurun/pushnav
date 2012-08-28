@@ -9,11 +9,25 @@
 (function($) {
 
 
+    var settings = {
+        onnavigation: null
+    };
+
+
     var isModern = isSupportPushState(),            // Allows to know if we're in a Browser that support pushState or not
         History = window.History,
         State = History.getState(),
         oldStateUrl,
-        oldHash;
+        fromId,
+        fromUrl;
+
+
+
+    $.pushnav = function (opts) {
+        $.extend(settings, opts);
+        fromUrl = window.location.href;
+        init();
+    };
 
 
     /***********************************************************************************
@@ -43,14 +57,15 @@
 
 
     $(window).bind('statechange',function(){
-        console.log("statechange");
+       // console.log("statechange");
 
         var State = History.getState(); // Note: We are using History.getState() instead of event.state
-            History.log('statechange:', State.data, State.title, State.url);
+           // History.log('statechange:', State.data, State.title, State.url);
 
         // Verify if the new state url is different than the last one
         // (ex: first: product-section.html and the second trigger : product-section.html?expander1=true
         //      We don't want reload the page because it's just new query                               )
+
         var type = State.data.type,
             target= State.data.target,
             url= State.url,
@@ -65,7 +80,6 @@
             }
             loadNewContent({url:url,target:target});
             oldStateUrl = urlClean;
-            oldHash=null;
         }
 
     });
@@ -88,6 +102,7 @@
         }
 
     });
+
 
 
     /***********************************************************************************
@@ -157,10 +172,19 @@
             targetWithoutPrefix = opts.target.substr(1,opts.target.length);
         $data = $(opts.data).hasClass(targetWithoutPrefix) || $(opts.data).is("[id='"+targetWithoutPrefix+"']") ? $(opts.data) : $(opts.data).find(opts.target);
 
-        $elem.replaceWith($data);
+
+        if(settings.onnavigation) {
+            settings.onnavigation(opts.data,$data, fromUrl, opts.url, fromId, $(opts.target));
+        } else {
+            $elem.replaceWith($data);
+        }
+
+        fromUrl = opts.url;
+        fromId = $data;
 
         $(window).trigger("swapcontent_change");
         reEnhanceAjaxLink(opts.url);
+
     }
 
 
@@ -168,6 +192,7 @@
     /***********************************************************************************
      * GETTER
      **********************************************************************************/
+
 
     function getUrlToClean(url) {
         var urlObj = $.url.parse(url),
@@ -255,9 +280,6 @@
         // Return
         return result;
     }
-
-
-    init();
 
 })(jQuery);
 

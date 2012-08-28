@@ -14,3 +14,53 @@ p{
     border: 1px solid gray;
     padding:10px;
 }
+
+#microsite {
+    margin-top: 30px;
+    background:#ebebeb;
+    width: 500px;
+    height: 200px;
+}
+
+#microsite #nav{
+    float:left;
+    width: 80px;
+    background: #818181;
+    height: 200px;
+}
+
+#microsite  #nav ul,
+#microsite  #subnav ul{
+    list-style: none;
+    padding:10px 0 0 10px;
+    margin:0;
+}
+
+#microsite  #nav ul li,
+#microsite  #subnav ul li{
+    padding: 10px;
+}
+
+#microsite  #wrapper{
+    float:left;
+    width: 420px;
+    overflow: hidden;
+}
+
+#microsite  #subnav{
+    position:relative;
+    left:-50px;
+    float:left;
+    width: 50px;
+    background: #bfbfbf;
+    height: 200px;
+    z-index:10;
+}
+
+#microsite #micrositeContent {
+    height: 160px;
+    padding:20px;
+    overflow: hidden;
+}
+
+

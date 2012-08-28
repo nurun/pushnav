@@ -1533,6 +1533,7 @@
          * @param {Integer} queue [optional]
          */
         History.forward = function(queue){
+
             //History.debug('History.forward: called', arguments);
 
             // Handle Queueing
@@ -1558,6 +1559,8 @@
 
             // Go forward
             history.go(1);
+
+            History.Adapter.trigger(window,'pushnavforward');
 
             // End forward closure
             return true;
