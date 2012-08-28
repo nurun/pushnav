@@ -12,25 +12,33 @@
     <script type="text/javascript" src="../js/libs/historyjs/json2.js"></script>
     <script type="text/javascript" src="../js/libs/jquery.urldecoder.min.js"></script>
     <script type="text/javascript" src="../js/libs/enhance.js"></script>
-    <script type="text/javascript" src="../js/common.js"></script>
-</head>
+    <script type="text/javascript" src="../js/common2.js"></script>
 <body>
 <div class="swapcontent">
-    <h1>Common History</h1>
-    <ul>
-        <li><a href="#tab1?isAjax=false">Traditionnal Anchor</a></li>
-        <li><a href="#question/q1/a/q2/?isAjax=false">Complex Traditionnal Anchor</a></li>
-        <li><a href="description.html" data-ajax-target="#content">Axafiy link</a></li>
-        <li><a href="#" id="replaceState1">ReplaceState Link</a></li>
-        <li><a href="#" id="replaceState2">ReplaceState Link #2</a></li>
-    </ul>
 
-
-    <h2>Ajax Area</h2>
-    <div id="content">
-        <p>1</p>
+    <div id="microsite">
+        <div id="nav">
+            <ul>
+                <li href="/example/chicken.html" data-ajax-target="#wrapper"><a href="#">Chicken</a></li>
+                <li><a href="/example/dog.html" data-ajax-target="#micrositeContent">Dog</a></li>
+                <li><a href="#">Cat</a></li>
+            </ul>
+        </div>
+        <div id="wrapper">
+            <div id="subnav">
+                <ul>
+                    <li><a href="/example/chicken1.html" data-ajax-target="#micrositeContent">C1</a></li>
+                    <li><a href="/example/chicken2.html" data-ajax-target="#micrositeContent">C2</a></li>
+                    <li><a href="#">C3</a></li>
+                </ul>
+            </div>
+            <div id="micrositeContent">
+                <img src="/images/chicken2.jpg">
+            </div>
+        </div>
     </div>
-    <h2>Log</h2>
+
+<h2>Log</h2>
     <textarea id="log" style="width:100%;height:400px"></textarea>
 
 </div>

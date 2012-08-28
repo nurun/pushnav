@@ -49,12 +49,16 @@ p{
 
 #microsite  #subnav{
     position:relative;
-    left:-50px;
     float:left;
+    left:0px;
     width: 50px;
     background: #bfbfbf;
     height: 200px;
     z-index:10;
+}
+
+#microsite #subnav.nodisplay {
+    left: -50px;
 }
 
 #microsite #micrositeContent {
@@ -63,4 +67,7 @@ p{
     overflow: hidden;
 }
 
+#microsite img {
+    max-width: 150px;
+}
 
