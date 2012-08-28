@@ -19,7 +19,8 @@
         State = History.getState(),
         oldStateUrl,
         fromId,
-        fromUrl;
+        fromUrl,
+        $from;
 
 
 
@@ -174,13 +175,14 @@
 
 
         if(settings.onnavigation) {
-            settings.onnavigation(opts.data,$data, fromUrl, opts.url, fromId, $(opts.target));
+            settings.onnavigation($from,opts.data,$data, fromUrl, opts.url, fromId, $(opts.target));
         } else {
             $elem.replaceWith($data);
         }
 
         fromUrl = opts.url;
         fromId = $data;
+        $from = opts.data;
 
         $(window).trigger("swapcontent_change");
         reEnhanceAjaxLink(opts.url);

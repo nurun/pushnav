@@ -2,69 +2,96 @@ $(function() {
     $.pushnav({onnavigation:onNavigation});
 
 
-    function onNavigation($destDocument, $destElement, fromUrl, targetUrl, $fromId, $targetId) {
-
-        console.log("=>",$fromId, $targetId);
+    function onNavigation($fromDestDocument, $destDocument, $destElement, fromUrl, targetUrl, $fromId, $targetId) {
 
         var $newContent = $destElement.find("#micrositeContent"),
             $newSubNav = $destElement.find("#subnav");
 
-
-        // Switch Between a SubSection Content to the Main Section content
-        if ($fromId && $targetId && $fromId.attr("id")== "micrositeContent" && $targetId.attr("id") == "wrapper" ) {
-            console.log("Transition #1", parseFloat($("#subnav").css("left")), $destElement, parseFloat($newSubNav.css("left")) );
-                $("#subnav").replaceWith($newSubNav);
-                $newSubNav.css("left","-50px").animate({"left":"0px"},{duration:500, easing: 'easeInOutSine'});
-            fadeInOutContent($("#micrositeContent"),$newContent);
+        // Use only one time when we get on the website
+        if(!$fromId) {
+            if($targetId.attr("id") == "wrapper") {
+               // Subnav
+               handleSubNav($("#subnav"),$newSubNav);
+               // Content
+               fadeInOutContent($("#micrositeContent"),$newContent);
+            }
         }
 
-        // Switch Between Section Content a submenu visible to Generic Section without subnav
-       else if( $fromId && $targetId && $fromId.attr("id") == "wrapper" && $targetId.attr("class") == "swapcontent" && parseFloat($("#subnav").css("left")) >= 0) {
-            console.log("Transition #2");
-            $("#subnav").animate({"left":"-50px"},{duration:500, easing: 'easeInOutSine', complete: function() {
-                console.log("$newSubNav", $newSubNav);
-                $(this).replaceWith($newSubNav);
-            }});
+        // Always pass here after the first run.
+        if($fromId && $targetId) {
+            if( $fromId.attr("id") == "wrapper" && $targetId.attr("class") == "swapcontent" ||
+                $fromId.attr("id") == "wrapper" && $targetId.attr("id") == "wrapper" ||
+                $fromId.attr("class") == "swapcontent" && $targetId.attr("id") == "wrapper" ) {
 
-            fadeInOutContent($("#micrositeContent"),$newContent);
+                // We get the oldSrc not modified by the pushnav plugin
+                if($fromDestDocument) {
+                    var $subNav =  $fromDestDocument.find("#subnav");
+                    handleSubNav($("#subnav"), $newSubNav, $subNav);
+                }
+                fadeInOutContent($("#micrositeContent"),$newContent);
+            }
         }
 
-        else if ($fromId && $targetId && $fromId.attr("id") == "micrositeContent" && $targetId.attr("class") == "swapcontent") {
-            console.log("Transition #3");
-            fadeInOutContent($("#micrositeContent"),$newContent);
-        }
+    }
 
-        // Switch Between the Main Section content to SubSection content or
-        // Switch Between the SubSection content to another SubSection content
-        else if ($fromId && $targetId && ( $fromId.attr("id") == "wrapper" && $targetId.attr("id") == "micrositeContent") || ( $targetId.attr("id") == "micrositeContent")) {
-            console.log("Transition #4");
-            fadeInOutContent($("#micrositeContent"),$destElement);
+    /**
+     * Handle if we have to display or not the subnav
+     * @param $oldSubnav
+     * @param $newSubNav
+     */
+    function handleSubNav($oldSubnav, $newSubNav, $oldSubnavOrigin) {
+        var $oldChildren = $oldSubnav.children();
+            $newChildren = $newSubNav.children(),
+            $newSubNavClone = $newSubNav.clone(true);
 
-        } else if($fromId && $targetId &&  ( $fromId.attr("id") == "wrapper" && $targetId.attr("class") == "swapcontent") && parseFloat($("#subnav").css("left")) >= 0) {
-            fadeInOutContent($("#micrositeContent"),$newContent);
-        }
-        // Switch Between SubSection content to the Main Section content when we enter in the website (no fromId)
-        else if ($targetId && $targetId.attr("id") == "wrapper" && parseFloat($("#subnav").css("left")) >= 0){
-            console.log("Transition #5");
-            fadeInOutContent($("#micrositeContent"),$newContent);
-        }
+        // Verify if the oldSubnav (with origin src, because the subnav in the dom is modified by pushnav)
+        // is similar than the new subnav.
+        if(!$oldSubnavOrigin || $oldSubnavOrigin[0].outerHTML != $newSubNav[0].outerHTML) {
 
-        else if ($targetId && $targetId.attr("id") == "wrapper") {
-            console.log("Transition #6");
-            $("#subnav").replaceWith($newSubNav);
-            $newSubNav.css("left","-50px").animate({"left":"0px"},{duration:500, easing: 'easeInOutSine'});
-
-            fadeInOutContent($("#micrositeContent"),$newContent);
+            // We already have subnav in the screen, and the new subnav have children;
+            if($oldChildren.length > 0 && $newChildren.length > 0 ) {
+                $oldChildren.animate({"opacity":0},{duration:500, easing: 'easeInOutSine', complete: function(){
+                   $newSubNavClone.css("opacity", "0");
+                   $(this).removeAttr("opacity").replaceWith($newSubNavClone);
+                   $newSubNavClone.animate({"opacity":1},{duration:500, easing: 'easeInOutSine', complete: function(){
+                        $(this).removeAttr("opacity");
+                    }});
+                }});
+            }
+            // We have subnav in the screen but the new subnav have no children
+            else if($oldChildren.length > 0 && $newChildren.length <= 0 ) {
+                $oldSubnav.animate({"left":"-50px"},{duration:500, easing: 'easeInOutSine', complete: function() {
+                    $(this).replaceWith($newSubNavClone);
+                }});
+            }
+            // We have no children in the old subnav but the new subnav have children
+            else if($oldChildren.length <= 0 && $newChildren.length > 0 ) {
+                $oldSubnav.replaceWith($newSubNavClone);
+                $newSubNavClone.css("left","-50px").animate({"left":"0px"},{duration:500, easing: 'easeInOutSine'});
+            }
 
         }
     }
 
+
+    /**
+     * Transition between the old content and the new content
+     * @param $old
+     * @param $new
+     */
     function fadeInOutContent($old, $new) {
         $old.animate({"opacity":0},{duration:500, easing: 'easeInOutSine', complete: function(){
+            $new = $new.clone(true);
             $new.css("opacity", "0");
             $(this).replaceWith($new);
             $new.animate({"opacity":1},{duration:500, easing: 'easeInOutSine'});
         }});
     }
+
+    /***********************************************************************************
+     * Utils
+     **********************************************************************************/
+
+
 
 });
