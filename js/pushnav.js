@@ -141,6 +141,22 @@
                 $this.attr("href",addQueryInURL(oldHref,{isAjax:true}));
         });
 
+
+        // Fix For IE7, it replaces relative path to absolute.
+        // We want to be sure that the anchor link target the current page
+        // that we loaded not the first one.
+        if(!isModern) {
+            $("a[data-pushnav-ieanchor]").each(function(index,value) {
+                console.log("///");
+                var $this = $(this),
+                    url = getHash($this.attr("href"));
+
+                $this.attr('href',url).removeAttr("data-pushnav-ieanchor");
+            });
+        }
+        // END FIX
+
+
         $("a[href^='#']").each(function(index,value) {
             var $this = $(this),
                 currentUrl = getUrlToClean(currentPageUrl),
@@ -201,6 +217,13 @@
             urlHtml = urlObj.path;
         return urlHtml;
     }
+
+    function getHash(url) {
+        var urlObj = $.url.parse(url),
+            urlAnchor = "#" + urlObj.anchor;
+        return urlAnchor;
+    }
+
 
     /**
      * Replace # by / and remove query or everything begin with /
@@ -278,6 +301,12 @@
                 .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div class="document-$1"$2')
                 .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>')
             ;
+
+        // Fix For IE7, it replaces relative path to absolute.
+        // We want to be sure that the anchor link target the current page
+        // that we loaded not the first one.
+
+        if(! isModern) result = result.replace(/<(a(.*?)href=["'](#[^"']+)["'])([\s\>])/gi,'<a data-pushnav-ieanchor="true" $2href="'+url+'$3"$4');
 
         // Return
         return result;
