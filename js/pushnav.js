@@ -79,8 +79,7 @@
             } else {
                 target = ".swapcontent";
             }
-            loadNewContent({url:url,target:target});
-            oldStateUrl = urlClean;
+            onStateChange(url,target);
         }
 
     });
@@ -98,8 +97,7 @@
         var oldUrlClean = getUrlToClean(oldStateUrl);
 
         if(newUrl && newUrl != oldUrlClean) {
-            loadNewContent({url:newUrl, target:".swapcontent"});
-            oldStateUrl = newUrl;
+            onStateChange(newUrl,".swapcontent");
         }
 
     });
@@ -132,6 +130,11 @@
         reEnhanceAjaxLink(window.location.href);
     }
 
+    function onStateChange(url,target) {
+        $(window).trigger("pushnav_statechange");
+        loadNewContent({url:url, target:target});
+        oldStateUrl = url;
+    }
 
     function reEnhanceAjaxLink(currentPageUrl) {
 
@@ -147,7 +150,6 @@
         // that we loaded not the first one.
         if(!isModern) {
             $("a[data-pushnav-ieanchor]").each(function(index,value) {
-                console.log("///");
                 var $this = $(this),
                     url = getHash($this.attr("href"));
 
@@ -178,7 +180,7 @@
                 opts.data = data;
                 handleNewContent(opts);
             }, error: function(jqXHR, textStatus, errorThrown) {
-                console.log("error");
+                console.log("Pushnav :: The content content could not be downloaded");
             }
         });
     }
@@ -200,7 +202,7 @@
         fromId = $data;
         $from = opts.data;
 
-        $(window).trigger("swapcontent_change");
+        $(window).trigger("pushnav_contentchange");
         reEnhanceAjaxLink(opts.url);
 
     }
@@ -299,8 +301,7 @@
         var result = String(html)
                 .replace(/<\!DOCTYPE[^>]*>/i, '')
                 .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div class="document-$1"$2')
-                .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>')
-            ;
+                .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>');
 
         // Fix For IE7, it replaces relative path to absolute.
         // We want to be sure that the anchor link target the current page
