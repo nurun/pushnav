@@ -11,6 +11,7 @@
 
     var settings = {
         onnavigation: null
+        defaultTarget: ".swapcontent"
     };
 
 
@@ -60,15 +61,13 @@
     $(window).bind('statechange',function(){
        // console.log("statechange");
 
-        var State = History.getState(); // Note: We are using History.getState() instead of event.state
-           // History.log('statechange:', State.data, State.title, State.url);
+        var State = History.getState();
 
         // Verify if the new state url is different than the last one
         // (ex: first: product-section.html and the second trigger : product-section.html?expander1=true
         //      We don't want reload the page because it's just new query                               )
 
-        var type = State.data.type,
-            target= State.data.target,
+        var target= State.data.target,
             url= State.url,
             urlClean =  getUrlToClean(State.url),
             oldUrlClean = getUrlToClean(oldStateUrl);   // Remove the query argument;
@@ -77,7 +76,7 @@
             if($(State.data.target).length > 0) {
                 target= State.data.target;
             } else {
-                target = ".swapcontent";
+                target = settings.defaultTarget;
             }
             onStateChange(url,target);
         }
@@ -87,7 +86,7 @@
     $(window).bind("anchorchange", function(event, params) {
         History.log('Hash change:', State.data, State.title, State.url);
         var newUrl;
-            // We only need to target for not modern browser
+
         if(!isModern) {
             newUrl=  getUrlParams(History.getState().url) ? getUrlParams(History.getState().url).swaptarget : null;
         } else {
@@ -97,7 +96,7 @@
         var oldUrlClean = getUrlToClean(oldStateUrl);
 
         if(newUrl && newUrl != oldUrlClean) {
-            onStateChange(newUrl,".swapcontent");
+            onStateChange(newUrl,settings.defaultTarget);
         }
 
     });
@@ -119,7 +118,7 @@
 
             if($(target).length > 0) {
                 oldStateUrl = History.getState().url;
-                History.pushState({target:target,type:"swapcontent"}, null, url);
+                History.pushState({target:target,type:"pushnav"}, null, url);
             } else {
                 console.log("SwapContent: This target isn' valid, please enter valid one" + target );
             }
