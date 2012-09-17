@@ -3,24 +3,33 @@
 
 #Pushnav
 
+Version: Alpha
 
 *Pushnav* is a plugin that automates ajax navigation using html5 push-state.
 
 - - -
 
-###Compatibility:
+### Compatibility:
+
+##### HTML5 Browser
 - Firefox 4+
 - Chrome 8+
 - Opera 11.5
 - Safari 5.0+
 - Safari iOS 4.3+
 
+##### HTML4 Browser
+- Internet Explorer 7+
 
-###Dependencies:
+
+### Dependencies:
 - jQuery 1.7.2 (http://jquery.com/)
 - History.js (https://github.com/balupton/history.js)
 - jQuery URL Decoder 1.0 (http://urldecoderonline.com/)
- 
+
+## Still Missing:
+- Get back the native anchor behaviour (we disable it to make the plugin works under IE)
+- Create a transition syntax (for animation, reehance widgets plugin and more)
 
 
 ##Documentation in progress
@@ -50,8 +59,8 @@ The general way to setup it is as follows
 ``` javascript
 $.pushnav({
 
-// Define the default Ajax refresh target (used when they is no target defined)
-defaultTarget: ".pushnav_defaulttarget"     
+     // Define the default Ajax refresh target (used when they is no target defined)
+     defaultTarget: ".pushnav_defaulttarget"     
   
 });
 ```
@@ -60,6 +69,7 @@ To instantiate a link, you just have to add data-ajax-target with the DOM select
 ``` javascript
 <a href="example/description.html" data-ajax-target="#content">Axafiy link</a>
 ```
+
 
 ####Plugin's options
 | Option        | Default value          | Description                                                                        |
@@ -80,6 +90,23 @@ $(window).bind("pushnav_contentchange", function(event, params) {
    // Insert your script here
 });
 ```
+
+## Notice
+To make the plugin compatible with Internet Explorer, we disabled the native anchor behaviour (*the page doesn't scroll to the anchor position*).For all anchor href in the current page, we dynamically add this at the end "?isAjax=false&swaptarget=currentpage_url"
+
+If you create dynamically traditionnal anchor tag, you have to add "?isAjax=false&swaptarget=currentpage_url", like this:
+``` javascript
+<a href="#myAnchor?isAjax=false&swaptarget=currentpage_url">Anchor Link</a>
+```
+
+
+
+## Authors
+- Julie Cardinal
+- Mathieu Sylvain
+
+## License
+Need to be determined
   
   
 
