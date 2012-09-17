@@ -1,7 +1,3 @@
-Author: Julie Cardinal
-License: Public Domain
-
-
 - - -
 
 
