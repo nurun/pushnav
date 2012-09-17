@@ -10,8 +10,8 @@
 
 
     var settings = {
-        onnavigation: null
-        defaultTarget: ".swapcontent"
+        onnavigation: null,
+        defaultTarget: ".pushnav-defaulttarget"
     };
 
 
