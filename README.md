@@ -24,7 +24,7 @@ Version: Alpha
 
 ### Dependencies:
 - jQuery 1.7.2 (http://jquery.com/)
-- History.js (https://github.com/balupton/history.js)
+- History.js (You have to use our version)
 - jQuery URL Decoder 1.0 (http://urldecoderonline.com/)
 
 ## Still Missing:
@@ -42,6 +42,7 @@ Simply download all dependencies (with the right version). You have to add depen
 ``` javascript
 <script src="js/libs/jquery-1.7.2.min.js"></script>
 <script src="js/libs/jquery.urldecoder.min.js"></script>
+<script src="js/libs/jquery.history.min.js"></script>
 ```
 
 
@@ -106,8 +107,4 @@ If you create dynamically traditionnal anchor tag, you have to add "?isAjax=fals
 - Mathieu Sylvain
 
 ## License
-Need to be determined
-  
-  
-
-
+Licensed under the MIT license.
