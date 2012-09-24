@@ -82,8 +82,8 @@ To instantiate a link, you just have to add data-ajax-target with the DOM select
 
 | event                 | When it occurs?                                                                     |
 |:----------------------|:------------------------------------------------------------------------------------|
-| pushnav_statechange   | When the state change (*Triggered* ***before*** *we load* ***new content***)        |
-| pushnav_contentchange | When the content is loaded with ajax and the content is already affected to the DOM |
+| state_change.pushnav   | When the state change (*Triggered* ***before*** *we load* ***new content***)        |
+| content_change.pushnav | When the content is loaded with ajax and the content is already affected to the DOM |
   
 #### How to listen
 ``` javascript

@@ -130,7 +130,7 @@
     }
 
     function onStateChange(url,target) {
-        $(window).trigger("pushnav_statechange");
+        $(window).trigger("state_change.pushnav");
         loadNewContent({url:url, target:target});
         oldStateUrl = url;
     }
@@ -138,9 +138,9 @@
     function reEnhanceAjaxLink(currentPageUrl) {
 
         $("a[data-ajax-target]").each(function(index,value){
-                var $this = $(this),
-                    oldHref = $(this).attr("href");
-                $this.attr("href",addQueryInURL(oldHref,{isAjax:true}));
+            var $this = $(this),
+                oldHref = $(this).attr("href");
+            $this.attr("href",addQueryInURL(oldHref,{isAjax:true}));
         });
 
 
@@ -201,7 +201,7 @@
         fromId = $data;
         $from = opts.data;
 
-        $(window).trigger("pushnav_contentchange");
+        $(window).trigger("content_change.pushnav");
         reEnhanceAjaxLink(opts.url);
 
     }
