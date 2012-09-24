@@ -120,7 +120,7 @@
                 oldStateUrl = History.getState().url;
                 History.pushState({target:target,type:"pushnav"}, null, url);
             } else {
-                console.log("SwapContent: This target isn' valid, please enter valid one" + target );
+                console.log("Pushnav: This target isn' valid, please enter valid one" + target );
             }
 
             evt.preventDefault();
@@ -179,7 +179,7 @@
                 opts.data = data;
                 handleNewContent(opts);
             }, error: function(jqXHR, textStatus, errorThrown) {
-                console.log("Pushnav :: The content content could not be downloaded");
+                console.log("Pushnav :: The content could not be downloaded");
             }
         });
     }
