@@ -2,17 +2,8 @@
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-    <title>Common History</title>
+    <title>Pushnav</title>
     <link type="text/css" href="../css/style.css" rel="stylesheet" />
-    <script type="text/javascript" src="../js/libs/jquery-1.7.2.min.js"></script>
-    <script type="text/javascript" src="../js/libs/jquery.easing.1.3.js"></script>
-    <script type="text/javascript" src="../js/libs/historyjs/history.adapter.jquery.js"></script>
-    <script type="text/javascript" src="../js/libs/historyjs/history.html4.js"></script>
-    <script type="text/javascript" src="../js/libs/historyjs/history.js"></script>
-    <script type="text/javascript" src="../js/libs/historyjs/json2.js"></script>
-    <script type="text/javascript" src="../js/libs/jquery.urldecoder.min.js"></script>
-    <script type="text/javascript" src="../js/libs/enhance.js"></script>
-    <script type="text/javascript" src="../js/common.js"></script>
 </head>
 <body>
 <div class="pushnav-defaulttarget">
@@ -20,7 +11,7 @@
     <ul>
         <li><a href="#tab1?isAjax=false">Traditionnal Anchor</a></li>
         <li><a href="#question/q1/a/q2/?isAjax=false">Complex Traditionnal Anchor</a></li>
-        <li><a href="description.html" data-ajax-target="#content">Axafiy link</a></li>
+        <li><a href="/example/description.html" data-ajax-target="#content">Axafiy link</a></li>
         <li><a href="#" id="replaceState1">ReplaceState Link</a></li>
         <li><a href="#" id="replaceState2">ReplaceState Link #2</a></li>
     </ul>
@@ -37,5 +28,9 @@
 
 </div>
 </body>
+<script type="text/javascript" src="../js/libs/jquery-1.7.2.min.js"></script>
+<script type="text/javascript" src="../js/libs/jquery.history.min.js"></script>
+<script type="text/javascript" src="../js/libs/jquery.urldecoder.min.js"></script>
+<script type="text/javascript" src="../js/common.js"></script>
 <script type="text/javascript" src="../js/pushnav.js"></script>
 </html>
