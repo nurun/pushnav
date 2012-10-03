@@ -24,6 +24,7 @@ Version: Alpha
 
 ### Dependencies:
 - jQuery 1.7.2 (http://jquery.com/)
+- jQuery Easing 1.3 (http://gsgd.co.uk/sandbox/jquery/easing/)
 - History.js (You have to use our version)
 - jQuery URL Decoder 1.0 (http://urldecoderonline.com/)
 
@@ -41,6 +42,7 @@ The documentation is still a work in progress.
 Simply download all dependencies (with the right version). You have to add dependencies to your project like this:
 ``` javascript
 <script src="js/libs/jquery-1.7.2.min.js"></script>
+<script src="js/libs/jquery.easing.1.3.js"></script>
 <script src="js/libs/jquery.urldecoder.min.js"></script>
 <script src="js/libs/jquery.history.min.js"></script>
 ```
