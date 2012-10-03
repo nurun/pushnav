@@ -12,11 +12,13 @@
     var settings = {
         onnavigation: null,
         defaultTarget: ".pushnav-defaulttarget",
-        disableNotModern: false
+        disableNotModern: false,
+        easeingScrollTo: "easeInOutCubic"
     };
 
 
     var isModern = isSupportPushState(),            // Allows to know if we're in a Browser that support pushState or not
+        documentBody = (($.browser.chrome)||($.browser.safari)) ? document.body : document.documentElement,
         History = window.History,
         State = History.getState(),
         oldStateUrl,
@@ -101,6 +103,21 @@
                 onStateChange(newUrl,settings.defaultTarget);
             }
 
+        });
+
+        // We use it to fake the default behaviour
+        $(window).bind('anchorchange', function() {
+            var currentHash = getHashToClean(window.location.hash) == "" ? ".pushnav-defaulttarget" : getHashToClean(window.location.hash) ;
+            if($(currentHash).length) {
+                $(documentBody).stop().animate({scrollTop: $(currentHash).offset().top}, 1000,settings.easeingScrollTo);
+            }
+        });
+
+        // Scroll the page in the top if we don't have anchor
+        $(window).bind('hashchange', function() {
+            if(window.location.hash == "") {
+                $(documentBody).stop().animate({scrollTop: $("body").offset().top}, 1000,settings.easeingScrollTo);
+            }
         });
     }
 
@@ -236,7 +253,7 @@
      * @return {String}
      */
     function getHashToClean(hash) {
-        var hash = hash.replace("#","/").replace(/\?.*/,'');
+        var hash = hash.replace(/\?.*/,'');
         return hash;
     }
 
