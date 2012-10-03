@@ -76,6 +76,7 @@ To instantiate a link, you just have to add data-ajax-target with the DOM select
 | Option        | Default value          | Description                                                                        |
 |:--------------|:-----------------------|:-----------------------------------------------------------------------------------|
 | defaultTarget | .pushnav-defaulttarget | Define the **default Ajax refresh target** (*used when they is no target defined*) |
+| disableNotModern | false | Lets **disable** the plugin on browsers that **do not support pushstate** |
 
 ## Events
 #### Events available
