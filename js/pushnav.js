@@ -11,7 +11,8 @@
 
     var settings = {
         onnavigation: null,
-        defaultTarget: ".pushnav-defaulttarget"
+        defaultTarget: ".pushnav-defaulttarget",
+        disableNotModern: false
     };
 
 
@@ -27,8 +28,10 @@
 
     $.pushnav = function (opts) {
         $.extend(settings, opts);
-        fromUrl = window.location.href;
-        init();
+        if(!settings.disableNotModern) {
+            fromUrl = window.location.href;
+            init();
+        }
     };
 
 
@@ -57,50 +60,49 @@
      * EVENTS
      **********************************************************************************/
 
+    function createEvents() {
 
-    $(window).bind('statechange',function(){
-       // console.log("statechange");
+        $(window).bind('statechange',function(){
+            var State = History.getState();
 
-        var State = History.getState();
+            // Verify if the new state url is different than the last one
+            // (ex: first: product-section.html and the second trigger : product-section.html?expander1=true
+            //      We don't want reload the page because it's just new query                               )
 
-        // Verify if the new state url is different than the last one
-        // (ex: first: product-section.html and the second trigger : product-section.html?expander1=true
-        //      We don't want reload the page because it's just new query                               )
+            var target= State.data.target,
+                url= State.url,
+                urlClean =  getUrlToClean(State.url),
+                oldUrlClean = getUrlToClean(oldStateUrl);   // Remove the query argument;
 
-        var target= State.data.target,
-            url= State.url,
-            urlClean =  getUrlToClean(State.url),
-            oldUrlClean = getUrlToClean(oldStateUrl);   // Remove the query argument;
-
-        if (oldUrlClean !== urlClean) {
-            if($(State.data.target).length > 0) {
-                target= State.data.target;
-            } else {
-                target = settings.defaultTarget;
+            if (oldUrlClean !== urlClean) {
+                if($(State.data.target).length > 0) {
+                    target= State.data.target;
+                } else {
+                    target = settings.defaultTarget;
+                }
+                onStateChange(url,target);
             }
-            onStateChange(url,target);
-        }
 
-    });
+        });
 
-    $(window).bind("anchorchange", function(event, params) {
-        History.log('Hash change:', State.data, State.title, State.url);
-        var newUrl;
+        $(window).bind("anchorchange", function(event, params) {
+            History.log('Hash change:', State.data, State.title, State.url);
+            var newUrl;
 
-        if(!isModern) {
-            newUrl=  getUrlParams(History.getState().url) ? getUrlParams(History.getState().url).swaptarget : null;
-        } else {
-            newUrl=  getUrlToClean(History.getState().url);
-        }
+            if(!isModern) {
+                newUrl=  getUrlParams(History.getState().url) ? getUrlParams(History.getState().url).swaptarget : null;
+            } else {
+                newUrl=  getUrlToClean(History.getState().url);
+            }
 
-        var oldUrlClean = getUrlToClean(oldStateUrl);
+            var oldUrlClean = getUrlToClean(oldStateUrl);
 
-        if(newUrl && newUrl != oldUrlClean) {
-            onStateChange(newUrl,settings.defaultTarget);
-        }
+            if(newUrl && newUrl != oldUrlClean) {
+                onStateChange(newUrl,settings.defaultTarget);
+            }
 
-    });
-
+        });
+    }
 
 
     /***********************************************************************************
@@ -125,6 +127,8 @@
 
             evt.preventDefault();
         });
+
+        createEvents();
 
         reEnhanceAjaxLink(window.location.href);
     }
@@ -175,7 +179,7 @@
             url: opts.url,
             dataType: "html",
             success: function(data) {
-                data = $("<div>"+getDocumentHtml(data)+"</div>");
+                data = $("<div>"+getDocumentHtml(data,opts.url)+"</div>");
                 opts.data = data;
                 handleNewContent(opts);
             }, error: function(jqXHR, textStatus, errorThrown) {
@@ -295,7 +299,7 @@
      * @param html
      * @return {String}
      */
-    function getDocumentHtml(html){
+    function getDocumentHtml(html,url){
         // Prepare
         var result = String(html)
                 .replace(/<\!DOCTYPE[^>]*>/i, '')
