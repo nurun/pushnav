@@ -13,7 +13,16 @@
         onnavigation: null,
         defaultTarget: ".pushnav-defaulttarget",
         disableNotModern: false,
-        easeingScrollTo: "easeInOutCubic"
+        easeingScrollTo: "easeInOutCubic",
+
+
+        duration:1000, // How long to animate.
+        axis:'y', // Which of top and left should be modified.
+        event:'click', // On which event to react.
+        stop:true, // Avoid queuing animations
+        target: window, // What to scroll (selector or element). The whole window by default.
+        parents: [],
+        reset: true // Used by $.localScroll.hash. If true, elements' scroll is resetted before actual scrolling
     };
 
 
@@ -41,7 +50,7 @@
      * DATA MODEL OBJECT
      **********************************************************************************/
         // Log Initial State
-        History.log('initial:', State.data, State.title, State.url);
+    //History.log('initial:', State.data, State.title, State.url);
 
 
     function UrlBuild (data) {
@@ -88,7 +97,7 @@
         });
 
         $(window).bind("anchorchange", function(event, params) {
-            History.log('Hash change:', State.data, State.title, State.url);
+            //History.log('Hash change:', State.data, State.title, State.url);
             var newUrl;
 
             if(!isModern) {
@@ -109,7 +118,15 @@
         $(window).bind('anchorchange', function() {
             var currentHash = getHashToClean(window.location.hash) == "" ? ".pushnav-defaulttarget" : getHashToClean(window.location.hash) ;
             if($(currentHash).length) {
-                $(documentBody).stop().animate({scrollTop: $(currentHash).offset().top}, 1000,settings.easeingScrollTo);
+
+                settings.parents = getDivScrollable( $(currentHash).parents());
+
+                if( $(currentHash).parent().css("overflow") == "scroll"){
+                    settings.target=$(currentHash).parent();
+                } else {
+                    settings.target = window;
+                }
+                scroll(null,currentHash,settings);
             }
         });
 
@@ -120,6 +137,62 @@
             }
         });
     }
+
+
+
+    function getDivScrollable($elems) {
+        var divs = new Array();
+        $elems.each(function(index, value) {
+            if($(value).css("overflow") == "scroll") {
+                divs.push($(value));
+            }
+        });
+
+        divs.push(window);
+        //divs.reverse();
+        return divs;
+    }
+
+
+    // Based on Ariel Flesler localScroll function.
+    // Modified to act like we need.
+    function scroll(e,link, settings ){
+        var id = link.replace("#",""),
+            elem = document.getElementById(id) || document.getElementsByName(id)[0];
+
+        if ( !elem )
+            return;
+
+        var $target = $( settings.target );
+
+        if( settings.lock && $target.is(':animated') ||
+            settings.onBefore && settings.onBefore(e, elem, $target) === false )
+            return;
+
+        if( settings.stop )
+            $target._scrollable().stop(true); // remove all its animations
+
+
+        // If we have parents container scrollable.
+        if(settings.parents.length > 1) {
+            console.log("create Loop to scroll its parents" );
+            var lg = settings.parents.length -1;
+            console.log("lg", lg);
+            $.each(settings.parents.reverse(), function(index,value){
+                if(index < lg) {
+                    var $target = $($(settings.parents).get(index)),
+                        $elem =  $($(settings.parents).get(index+1))  ;
+
+                    $target.scrollTo( $elem, settings )
+                }
+            });
+        }
+
+        $target
+            .scrollTo( elem, settings ) // do scroll
+            .trigger('notify.serialScroll',[elem]); // notify serialScroll about this change
+    }
+
 
 
     /***********************************************************************************
@@ -146,7 +219,6 @@
         });
 
         createEvents();
-
         reEnhanceAjaxLink(window.location.href);
     }
 
@@ -248,7 +320,7 @@
 
 
     /**
-     * Replace # by / and remove query or everything begin with /
+     * Remove query
      * @param hash {String}
      * @return {String}
      */

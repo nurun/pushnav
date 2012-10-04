@@ -71,3 +71,7 @@ p{
     max-width: 150px;
 }
 
+#tab2 {
+    height:200px;
+    overflow:scroll;
+}
