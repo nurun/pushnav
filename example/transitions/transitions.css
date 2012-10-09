@@ -1,0 +1,91 @@
+body {
+    font-family: Arial;
+    font-size:12px;
+}
+
+p{
+    font-size:12px;
+    font-weight:normal
+}
+
+a {
+    text-decoration: none;
+}
+
+
+#content {
+    border: 1px solid gray;
+    padding:10px;
+}
+
+#microsite {
+    margin-top: 30px;
+    background:#ebebeb;
+    width: 700px;
+    height: 300px;
+}
+
+#microsite #nav{
+    float:left;
+    width: 140px;
+    background: #818181;
+    height: 100%;
+}
+
+#microsite  #nav ul,
+#microsite  #subnav ul{
+    list-style: none;
+    padding:10px 0 0 10px;
+    margin:0;
+}
+
+#microsite  #nav ul li,
+#microsite  #subnav ul li{
+    padding: 10px;
+}
+
+#microsite  #wrapper{
+    float:left;
+    width: 420px;
+    overflow: hidden;
+    height: 100%;
+}
+
+#microsite  #subnav{
+    position:relative;
+    float:left;
+    left:0px;
+    width: 140px;
+    background: #bfbfbf;
+    z-index:10;
+    height: 100%;
+    overflow: hidden;
+}
+
+#microsite  #subnav ul {
+    width: 140px;
+}
+
+
+#microsite #subnav.nodisplay {
+    left: -50px;
+}
+
+#microsite #micrositeContent {
+    height: 260px;
+    padding:20px;
+    overflow: hidden;
+}
+
+#microsite img {
+    max-width: 300px;
+}
+
+.active {
+    font-weight: bold;
+    background: #fff;
+}
+.active a {
+    color: #000;
+}
+

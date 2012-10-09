@@ -1,5 +1,6 @@
 //********************************************************************************//
 // @author : Julie Cardinal
+//           Mathieu Sylvain
 // @version : 1.0
 // @Description: This plugin swap the actual content with new content provided by ajax
 //               and override the browser history with pushState(or with hashtag for older browsers)
@@ -10,19 +11,22 @@
 
 
     var settings = {
-        onnavigation: null,
         defaultTarget: ".pushnav-defaulttarget",
-        disableNotModern: false
+        disableNotModern: false,
+        debug: false
     };
 
 
-    var isModern = isSupportPushState(),            // Allows to know if we're in a Browser that support pushState or not
+
+    var isModern = isSupportPushState(),
         History = window.History,
         State = History.getState(),
         oldStateUrl,
         fromId,
         fromUrl,
-        $from;
+        $from,
+        attachEls = [];
+    transitions = [];
 
 
 
@@ -34,12 +38,62 @@
         }
     };
 
+    /***********************************************************************************
+     * TRANSITIONS
+     **********************************************************************************/
+
+
+    $.pushnav.transition = function (from, to, handler) {
+        var trans = new Transition(from, to, handler);
+        transitions.push(trans);
+        return $.pushnav;
+    };
+
+    $.pushnav.attach = function (links, target) {
+        attachEls.push(links);
+
+        $("body").on("click", links, function (e) {
+            ajaxLinksOnClick(e, target);
+        });
+        return $.pushnav;
+    };
+
+    function Transition(from, to, handler) {
+        this.from = from;
+        this.to = to;
+        this.handler = handler;
+        this.transit = function (transition, midway) {
+            return this.handler(transition, midway);
+        };
+        this.test = function (transition) {
+            var isOk = true;
+            var to = transition.newContentRaw.find(".document-body").data("section");
+            var from = $("body").data("section");
+            if (this.to && this.to !== to) isOk = false;
+            if (this.from && this.from !== from) isOk = false;
+            return isOk;
+        }
+    }
+
+
+    /**
+     * Fallback transition which simply swap the old and next
+     * content without any animation
+     * @param transition
+     */
+    var swapTransition = new Transition('', '', function swapTransition(transition) {
+        transition.target.replaceWith(transition.newContent);
+        return false;
+    });
 
     /***********************************************************************************
      * DATA MODEL OBJECT
      **********************************************************************************/
-        // Log Initial State
+    // Log Initial State
+    if(settings.debug) {
         History.log('initial:', State.data, State.title, State.url);
+        console.log('initial:', State.data, State.title, State.url);
+    }
 
 
     function UrlBuild (data) {
@@ -60,9 +114,15 @@
      * EVENTS
      **********************************************************************************/
 
+
     function createEvents() {
 
         $(window).bind('statechange',function(){
+            if(settings.debug) {
+                History.log('statechange:', State.data, State.title, State.url);
+                console.log('statechange:', State.data, State.title, State.url);
+            }
+
             var State = History.getState();
 
             // Verify if the new state url is different than the last one
@@ -86,7 +146,11 @@
         });
 
         $(window).bind("anchorchange", function(event, params) {
-            History.log('Hash change:', State.data, State.title, State.url);
+            if(settings.debug) {
+                History.log('Hash change:', State.data, State.title, State.url);
+                console.log('Hash change:', State.data, State.title, State.url);
+            }
+
             var newUrl;
 
             if(!isModern) {
@@ -110,27 +174,27 @@
      **********************************************************************************/
 
     function init() {
-
         oldStateUrl = History.getState().url;
+        $("body").on("click", "[data-ajax-target]", ajaxLinksOnClick);
+        createEvents();
+        reEnhanceAjaxLink(window.location.href);
+    }
 
-        $("body").delegate("[data-ajax-target]", "click", function(evt) {
-            var $current =  $(evt.currentTarget),
-                url = $current.attr("href"),
-                target = $current.attr("data-ajax-target") ;
+    function ajaxLinksOnClick(evt, target) {
+        evt.preventDefault();
+        var $current =  $(evt.currentTarget),
+            url = $current.attr("href"),
+            target = target || $current.attr("data-ajax-target") ;
 
-            if($(target).length > 0) {
-                oldStateUrl = History.getState().url;
-                History.pushState({target:target,type:"pushnav"}, null, url);
-            } else {
+        if($(target).length > 0) {
+            oldStateUrl = History.getState().url;
+            History.pushState({target:target,type:"pushnav"}, null, url);
+        } else {
+            if(settings.debug) {
+                History.log("Pushnav: This target isn' valid, please enter valid one" + target );
                 console.log("Pushnav: This target isn' valid, please enter valid one" + target );
             }
-
-            evt.preventDefault();
-        });
-
-        createEvents();
-
-        reEnhanceAjaxLink(window.location.href);
+        }
     }
 
     function onStateChange(url,target) {
@@ -140,6 +204,16 @@
     }
 
     function reEnhanceAjaxLink(currentPageUrl) {
+
+
+        /*$.each(attachEls, function(index,value) {
+         $(value).each(function(index,value){
+         var $this = $(this),
+         oldHref = $(this).attr("href");
+         $this.attr("href",addQueryInURL(oldHref,{isAjax:true}));
+         });
+         });*/
+
 
         $("a[data-ajax-target]").each(function(index,value){
             var $this = $(this),
@@ -178,27 +252,64 @@
         $.ajax({
             url: opts.url,
             dataType: "html",
+            beforeSend: function(xhr) {
+                $("body").addClass("pushNav-loading");
+            },
             success: function(data) {
+                $("body").removeClass("pushNav-loading");
                 data = $("<div>"+getDocumentHtml(data,opts.url)+"</div>");
                 opts.data = data;
                 handleNewContent(opts);
-            }, error: function(jqXHR, textStatus, errorThrown) {
-                console.log("Pushnav :: The content could not be downloaded");
+            }, error: function(/*jqXHR, textStatus, errorThrown*/) {
+                $("body").css("cursor", "");
+
+                if(settings.debug) {
+                    History.log("Pushnav :: The content content could not be downloaded");
+                    console.log("Pushnav :: The content content could not be downloaded");
+                }
             }
         });
     }
 
 
     function handleNewContent(opts) {
-        var $elem = $(opts.target),
-            targetWithoutPrefix = opts.target.substr(1,opts.target.length);
-        $data = $(opts.data).hasClass(targetWithoutPrefix) || $(opts.data).is("[id='"+targetWithoutPrefix+"']") ? $(opts.data) : $(opts.data).find(opts.target);
 
+        var i,
+            result,
+            tempTransitions = transitions.slice(),
+            transition,
+            transitionState,
+            $elem = $(opts.target),
+            targetWithoutPrefix = opts.target.substr(1,opts.target.length),
+            $data = $(opts.data).hasClass(targetWithoutPrefix) || $(opts.data).is("[id='"+targetWithoutPrefix+"']") ? $(opts.data) : $(opts.data).find(opts.target);
 
-        if(settings.onnavigation) {
-            settings.onnavigation($from,opts.data,$data, fromUrl, opts.url, fromId, $(opts.target));
-        } else {
-            $elem.replaceWith($data);
+        tempTransitions.push(swapTransition);
+
+        var doneMidway = false;
+        transitionState = {
+            "from": $from,
+            "newContentRaw": opts.data,
+            "newContent": $data,
+            "fromUrl": fromUrl,
+            "toUrl": opts.url,
+            "fromId": fromId,
+            "target": $elem
+        };
+        function midway() {
+            // todo: is this where it should go ?
+            // the "data-section" attribute is updated after all transitions
+            if (!doneMidway) {
+                var to = transitionState.newContentRaw.find(".document-body").data("section");
+                $("body").data("section", to);
+                $("body").attr("data-section", to);
+            }
+        }
+        for (i = 0; i < tempTransitions.length; i++) {
+            transition = tempTransitions[i];
+            if (transition.test(transitionState)) {
+                result = transition.transit(transitionState, midway);
+                if (result === false) break;
+            }
         }
 
         fromUrl = opts.url;
@@ -209,8 +320,6 @@
         reEnhanceAjaxLink(opts.url);
 
     }
-
-
 
     /***********************************************************************************
      * GETTER
@@ -277,9 +386,9 @@
     }
 
     /**
-    * Detect if the browser support or not the HTML5 history
-    * @return {Boolean}
-    */
+     * Detect if the browser support or not the HTML5 history
+     * @return {Boolean}
+     */
     function isSupportPushState() {
         return !!(window.history && window.history.pushState);
     }
@@ -302,9 +411,9 @@
     function getDocumentHtml(html,url){
         // Prepare
         var result = String(html)
-                .replace(/<\!DOCTYPE[^>]*>/i, '')
-                .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div class="document-$1"$2')
-                .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>');
+            .replace(/<\!DOCTYPE[^>]*>/i, '')
+            .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div class="document-$1"$2')
+            .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>');
 
         // Fix For IE7, it replaces relative path to absolute.
         // We want to be sure that the anchor link target the current page
