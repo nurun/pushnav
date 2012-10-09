@@ -29,7 +29,7 @@ Version: Alpha
 
 ## Still Missing:
 - Get back the native anchor behaviour (we disable it to make the plugin works under IE)
-- Create a transition syntax (for animation, reehance widgets plugin and more)
+- Write the documentation for the transitions
 
 
 ##Documentation in progress
