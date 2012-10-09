@@ -89,7 +89,7 @@ To instantiate a link, you just have to add data-ajax-target with the DOM select
   
 #### How to listen
 ``` javascript
-$(window).bind("pushnav_contentchange", function(event, params) {
+$(window).bind("content_change.pushnav", function(event, params) {
    // Insert your script here
 });
 ```
