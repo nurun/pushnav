@@ -29,7 +29,7 @@ Version: Alpha
 
 ## Still Missing:
 - Get back the native anchor behaviour (we disable it to make the plugin works under IE)
-- Create a transition syntax (for animation, reehance widgets plugin and more)
+- Write the documentation for the transitions
 
 
 ##Documentation in progress
@@ -89,7 +89,7 @@ To instantiate a link, you just have to add data-ajax-target with the DOM select
   
 #### How to listen
 ``` javascript
-$(window).bind("pushnav_contentchange", function(event, params) {
+$(window).bind("content_change.pushnav", function(event, params) {
    // Insert your script here
 });
 ```
