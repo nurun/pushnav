@@ -1,5 +1,5 @@
 $(function() {
-    $.pushnav();
+    $.pushnav({debug:true});
 
 
     $("#replaceState1").click(function(evt){

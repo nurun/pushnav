@@ -20,7 +20,6 @@
 
     var isModern = isSupportPushState(),
         History = window.History,
-        State = History.getState(),
         oldStateUrl,
         fromId,
         fromUrl,
@@ -91,8 +90,8 @@
      **********************************************************************************/
     // Log Initial State
     if(settings.debug) {
+        var State = History.getState();
         History.log('initial:', State.data, State.title, State.url);
-        console.log('initial:', State.data, State.title, State.url);
     }
 
 
@@ -118,12 +117,8 @@
     function createEvents() {
 
         $(window).bind('statechange',function(){
-            if(settings.debug) {
-                History.log('statechange:', State.data, State.title, State.url);
-                console.log('statechange:', State.data, State.title, State.url);
-            }
-
             var State = History.getState();
+            if(settings.debug) History.log('statechange:', State.data, State.title, State.url);
 
             // Verify if the new state url is different than the last one
             // (ex: first: product-section.html and the second trigger : product-section.html?expander1=true
@@ -146,17 +141,15 @@
         });
 
         $(window).bind("anchorchange", function(event, params) {
-            if(settings.debug) {
-                History.log('Hash change:', State.data, State.title, State.url);
-                console.log('Hash change:', State.data, State.title, State.url);
-            }
+            var State = History.getState();
+            if(settings.debug)  History.log('Hash change:', State.data, State.title, State.url);
 
             var newUrl;
 
             if(!isModern) {
-                newUrl=  getUrlParams(History.getState().url) ? getUrlParams(History.getState().url).swaptarget : null;
+                newUrl=  getUrlParams(State.url) ? getUrlParams(State.url).swaptarget : null;
             } else {
-                newUrl=  getUrlToClean(History.getState().url);
+                newUrl=  getUrlToClean(State.url);
             }
 
             var oldUrlClean = getUrlToClean(oldStateUrl);
@@ -190,10 +183,7 @@
             oldStateUrl = History.getState().url;
             History.pushState({target:target,type:"pushnav"}, null, url);
         } else {
-            if(settings.debug) {
-                History.log("Pushnav: This target isn' valid, please enter valid one" + target );
-                console.log("Pushnav: This target isn' valid, please enter valid one" + target );
-            }
+            if(settings.debug) History.log("Pushnav: This target isn' valid, please enter valid one" + target );
         }
     }
 
@@ -249,6 +239,7 @@
     }
 
     function loadNewContent(opts) {
+
         $.ajax({
             url: opts.url,
             dataType: "html",
@@ -263,10 +254,7 @@
             }, error: function(/*jqXHR, textStatus, errorThrown*/) {
                 $("body").css("cursor", "");
 
-                if(settings.debug) {
-                    History.log("Pushnav :: The content content could not be downloaded");
-                    console.log("Pushnav :: The content content could not be downloaded");
-                }
+                if(settings.debug) History.log("Pushnav :: The content content could not be downloaded");
             }
         });
     }
