@@ -24,8 +24,7 @@
         fromId,
         fromUrl,
         $from,
-        attachEls = [];
-    transitions = [];
+        transitions = [];
 
 
 
@@ -49,7 +48,6 @@
     };
 
     $.pushnav.attach = function (links, target) {
-        attachEls.push(links);
 
         $("body").on("click", links, function (e) {
             ajaxLinksOnClick(e, target);
@@ -61,8 +59,9 @@
         this.from = from;
         this.to = to;
         this.handler = handler;
-        this.transit = function (transition, midway) {
-            return this.handler(transition, midway);
+        this.transit = function (transition) {
+            console.log(":::", this.handler, transition);
+            return this.handler(transition);
         };
         this.test = function (transition) {
             var isOk = true;
@@ -273,7 +272,6 @@
 
         tempTransitions.push(swapTransition);
 
-        var doneMidway = false;
         transitionState = {
             "from": $from,
             "newContentRaw": opts.data,
@@ -283,22 +281,18 @@
             "fromId": fromId,
             "target": $elem
         };
-        function midway() {
-            // todo: is this where it should go ?
-            // the "data-section" attribute is updated after all transitions
-            if (!doneMidway) {
-                var to = transitionState.newContentRaw.find(".document-body").data("section");
-                $("body").data("section", to);
-                $("body").attr("data-section", to);
-            }
-        }
+
         for (i = 0; i < tempTransitions.length; i++) {
             transition = tempTransitions[i];
             if (transition.test(transitionState)) {
-                result = transition.transit(transitionState, midway);
+                result = transition.transit(transitionState);
                 if (result === false) break;
             }
         }
+
+        var to = transitionState.newContentRaw.find(".document-body").data("section");
+        $("body").data("section", to);
+        $("body").attr("data-section", to);
 
         fromUrl = opts.url;
         fromId = $data;
