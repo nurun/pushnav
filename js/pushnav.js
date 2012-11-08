@@ -12,6 +12,7 @@
 
     var settings = {
         defaultTarget: ".pushnav-defaulttarget",
+        stopImmediatePropagation: false,
         disableNotModern: false,
         debug: false
     };
@@ -49,7 +50,7 @@
 
     $.pushnav.attach = function (links, target) {
 
-        $("body").on("click", links, function (e) {
+        $("body").delegate(links,"click", function (e) {
             ajaxLinksOnClick(e, target);
         });
         return $.pushnav;
@@ -60,7 +61,6 @@
         this.to = to;
         this.handler = handler;
         this.transit = function (transition) {
-            console.log(":::", this.handler, transition);
             return this.handler(transition);
         };
         this.test = function (transition) {
@@ -167,13 +167,14 @@
 
     function init() {
         oldStateUrl = History.getState().url;
-        $("body").on("click", "[data-ajax-target]", ajaxLinksOnClick);
+        $("body").delegate("click", "[data-ajax-target]", ajaxLinksOnClick);
         createEvents();
         reEnhanceAjaxLink(window.location.href);
     }
 
     function ajaxLinksOnClick(evt, target) {
         evt.preventDefault();
+        if (settings.stopImmediatePropagation) evt.stopImmediatePropagation();
         var $current =  $(evt.currentTarget),
             url = $current.attr("href"),
             target = target || $current.attr("data-ajax-target") ;
