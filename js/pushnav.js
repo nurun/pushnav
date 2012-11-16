@@ -12,7 +12,7 @@
 
     var settings = {
         defaultTarget: ".pushnav-defaulttarget",
-        stopImmediatePropagation: false,
+        stopPropagation: false,
         disableNotModern: false,
         debug: false
     };
@@ -174,7 +174,7 @@
 
     function ajaxLinksOnClick(evt, target) {
         evt.preventDefault();
-        if (settings.stopImmediatePropagation) evt.stopImmediatePropagation();
+        
         var $current =  $(evt.currentTarget),
             url = $current.attr("href"),
             target = target || $current.attr("data-ajax-target") ;
@@ -185,6 +185,12 @@
         } else {
             if(settings.debug) History.log("Pushnav: This target isn' valid, please enter valid one" + target );
         }
+
+        if (settings.stopPropagation) {
+            evt.stopPropagation();
+            return false;
+        } 
+        
     }
 
     function onStateChange(url,target) {
