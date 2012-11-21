@@ -20,6 +20,7 @@
 
 
     var isModern = isSupportPushState(),
+        isActive = false,
         History = window.History,
         oldStateUrl,
         fromId,
@@ -31,7 +32,9 @@
 
     $.pushnav = function (opts) {
         $.extend(settings, opts);
-        if(!settings.disableNotModern) {
+         isActive = isActivePushnav();
+
+       if (isActive) {
             fromUrl = window.location.href;
             init();
         }
@@ -43,16 +46,20 @@
 
 
     $.pushnav.transition = function (from, to, handler) {
-        var trans = new Transition(from, to, handler);
-        transitions.push(trans);
+        if (isActive) {
+            var trans = new Transition(from, to, handler);
+            transitions.push(trans);
+        }
         return $.pushnav;
     };
 
     $.pushnav.attach = function (links, target) {
 
-        $("body").delegate(links,"click", function (e) {
-            ajaxLinksOnClick(e, target);
-        });
+        if (isActive) {
+            $("body").delegate(links,"click", function (e) {
+                ajaxLinksOnClick(e, target);
+            });
+        }
         return $.pushnav;
     };
 
@@ -382,6 +389,9 @@
         return !!(window.history && window.history.pushState);
     }
 
+    function isActivePushnav() {
+        return (!isModern && settings.disableNotModern) ? false : true ;
+    }
 
     /**
      * Return all params from a url
