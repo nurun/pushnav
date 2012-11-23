@@ -253,8 +253,9 @@
 
     function loadNewContent(opts) {
 
+        var url = encodeURI(opts);
         $.ajax({
-            url: opts.url,
+            url: url,
             dataType: "html",
             beforeSend: function(xhr) {
                 $("body").addClass("pushNav-loading");
