@@ -677,6 +677,10 @@
             newState.hash = History.getShortUrl(newState.url);
             newState.data = History.cloneObject(oldState.data);
 
+
+            console.log(oldState.url||document.location.href,  newState.url);
+
+
             // Fetch ID
             newState.id = History.getIdByState(newState);
 
@@ -1071,7 +1075,8 @@
 
             // Unescape hash
             while ( true ) {
-                tmp = window.unescape(result);
+               // tmp = window.unescape(result);
+                tmp = decodeURI(result);
                 if ( tmp === result ) {
                     break;
                 }
