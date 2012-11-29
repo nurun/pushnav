@@ -174,7 +174,7 @@
 
     function init() {
         oldStateUrl = History.getState().url;
-        $("body").delegate("click", "[data-ajax-target]", ajaxLinksOnClick);
+        $("body").delegate("[data-ajax-target]","click", ajaxLinksOnClick);
         createEvents();
         reEnhanceAjaxLink(window.location.href);
     }
