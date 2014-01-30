@@ -253,7 +253,7 @@
 
     function loadNewContent(opts) {
 
-        var url = encodeURI(opts);
+        var url = encodeURI(opts.url);
         $.ajax({
             url: url,
             dataType: "html",
