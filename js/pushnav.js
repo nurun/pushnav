@@ -412,7 +412,7 @@
         // Prepare
         var result = String(html)
             .replace(/<\!DOCTYPE[^>]*>/i, '')
-            .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div class="document-$1"$2')
+            .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div data-pushnav-htmltag="$1"$2')
             .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>');
 
         // Fix For IE7, it replaces relative path to absolute.
