@@ -63,7 +63,7 @@
      */
 
     $.pushnav.attach = function (selector, target, event, getLink) {
-
+        var event = (typeof event =="undefined") ? "click" : event;
         if (isActive) {
             $("body").delegate(selector, event, function (evt) {
                 evt.preventDefault();
