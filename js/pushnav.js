@@ -32,9 +32,9 @@
 
     $.pushnav = function (opts) {
         $.extend(settings, opts);
-         isActive = isActivePushnav();
+        isActive = isActivePushnav();
 
-       if (isActive) {
+        if (isActive) {
             fromUrl = window.location.href;
             init();
         }
@@ -53,15 +53,27 @@
         return $.pushnav;
     };
 
-    $.pushnav.attach = function (links, target) {
+    /**
+     *
+     * @param selector                = element selector
+     * @param event                   = jquery event : click, change, focus
+     * @param target                  = container to replace
+     * @param getLink (optional)      = function to get the destination url : this function must return a url
+     * @returns {pushnav}
+     */
+
+    $.pushnav.attach = function (selector, target, event, getLink) {
 
         if (isActive) {
-            $("body").delegate(links,"click", function (e) {
-                ajaxLinksOnClick(e, target);
+            $("body").delegate(selector, event, function (evt) {
+                evt.preventDefault();
+                ajaxLinksOnClick(evt, target, getLink);
             });
         }
         return $.pushnav;
     };
+
+
 
     function Transition(from, to, handler) {
         this.from = from;
@@ -179,12 +191,14 @@
         reEnhanceAjaxLink(window.location.href);
     }
 
-    function ajaxLinksOnClick(evt, target) {
+    function ajaxLinksOnClick(evt, target, getLink) {
         evt.preventDefault();
-        
+
+
         var $current =  $(evt.currentTarget),
-            url = $current.attr("href"),
-            target = target || $current.attr("data-ajax-target") ;
+            url = (typeof getLink !== 'undefined') ? getLink(evt): $current.attr("href"),
+            target = target || $current.attr("data-ajax-target");
+
 
         if($(target).length > 0) {
             oldStateUrl = History.getState().url;
@@ -196,8 +210,8 @@
         if (settings.stopPropagation) {
             evt.stopPropagation();
             return false;
-        } 
-        
+        }
+
     }
 
     function onStateChange(url,target) {
