@@ -14,7 +14,9 @@
         defaultTarget: ".pushnav-defaulttarget",
         stopPropagation: false,
         disableNotModern: false,
-        debug: false
+        debug: false,
+        loadingSelector: "body",
+        loadingClass: "pushnav-loading"
     };
 
 
@@ -268,15 +270,18 @@
 
     function loadNewContent(opts) {
 
-        var url = encodeURI(opts.url);
+        var url = encodeURI(opts.url),
+            $loader = $(settings.loadingSelector),
+            loaderClass = settings.loadingClass;
+
         $.ajax({
             url: url,
             dataType: "html",
             beforeSend: function(xhr) {
-                $("body").addClass("pushNav-loading");
+                $loader.addClass(loaderClass);
             },
             success: function(data) {
-                $("body").removeClass("pushNav-loading");
+                $loader.removeClass(loaderClass);
                 data = $("<div>"+getDocumentHtml(data,opts.url)+"</div>");
                 opts.data = data;
                 handleNewContent(opts);
