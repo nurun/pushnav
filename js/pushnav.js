@@ -274,6 +274,8 @@
             $loader = $(settings.loadingSelector),
             loaderClass = settings.loadingClass;
 
+        $.event.trigger({type: "content_startloading.pushnav"});
+
         $.ajax({
             url: url,
             dataType: "html",
@@ -281,13 +283,14 @@
                 $loader.addClass(loaderClass);
             },
             success: function(data) {
+                $.event.trigger({type: "content_loadingcompleted.pushnav"});
                 $loader.removeClass(loaderClass);
                 data = $("<div>"+getDocumentHtml(data,opts.url)+"</div>");
                 opts.data = data;
                 handleNewContent(opts);
             }, error: function(/*jqXHR, textStatus, errorThrown*/) {
                 $("body").css("cursor", "");
-                $.event.trigger({type: "content_loadfail.pushnav", transition: $(opts.target)});
+                $.event.trigger({type: "content_loadingfail.pushnav", transition: $(opts.target)});
                 if(settings.debug) History.log("Pushnav :: The content content could not be downloaded");
             }
         });

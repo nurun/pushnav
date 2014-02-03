@@ -124,11 +124,13 @@ $.pushnav
 ## Events
 #### Events available
 
-| event                 | When it occurs?                                                                     |
-|:--------------------------|:------------------------------------------------------------------------------------|
-| state_change.pushnav      | When the state change (*Triggered* ***before*** *we load* ***new content***)        |
-| content_change.pushnav    | When the content is loaded with ajax and the content is already affected to the DOM |
-| content_loadfail.pushnav  | When the content fail to load in ajax                                               |
+| event                             | When it occurs?                                                                     |
+|:----------------------------------|:------------------------------------------------------------------------------------|
+| state_change.pushnav              | When the state change (*Triggered* ***before*** *we load* ***new content***)        |
+| content_change.pushnav            | When the content is loaded with ajax and the content is already affected to the DOM |
+| content_loadingfail.pushnav       | When the content fail to load in ajax                                               |
+| content_startloading.pushnav      | When the content start to load in ajax                                              |
+| content_loadingcompleted.pushnav  | When the content completed to load                                                  |
 
 #### How to listen
 ``` javascript
