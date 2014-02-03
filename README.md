@@ -125,13 +125,14 @@ $.pushnav
 #### Events available
 
 | event                 | When it occurs?                                                                     |
-|:----------------------|:------------------------------------------------------------------------------------|
-| state_change.pushnav   | When the state change (*Triggered* ***before*** *we load* ***new content***)        |
-| content_change.pushnav | When the content is loaded with ajax and the content is already affected to the DOM |
-  
+|:--------------------------|:------------------------------------------------------------------------------------|
+| state_change.pushnav      | When the state change (*Triggered* ***before*** *we load* ***new content***)        |
+| content_change.pushnav    | When the content is loaded with ajax and the content is already affected to the DOM |
+| content_loadfail.pushnav  | When the content fail to load in ajax                                               |
+
 #### How to listen
 ``` javascript
-$(window).bind("content_change.pushnav", function(event, params) {
+$(document).on("content_change.pushnav", function(event, params) {
    // Insert your script here
 });
 ```

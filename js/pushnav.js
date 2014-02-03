@@ -64,6 +64,7 @@
 
     $.pushnav.attach = function (selector, target, event, getLink) {
         var event = (typeof event =="undefined") ? "click" : event;
+
         if (isActive) {
             $("body").delegate(selector, event, function (evt) {
                 evt.preventDefault();
@@ -215,7 +216,7 @@
     }
 
     function onStateChange(url,target) {
-        $(window).trigger("state_change.pushnav");
+        $.event.trigger({type: "state_change.pushnav"});
         loadNewContent({url:url, target:target});
         oldStateUrl = url;
     }
@@ -281,7 +282,7 @@
                 handleNewContent(opts);
             }, error: function(/*jqXHR, textStatus, errorThrown*/) {
                 $("body").css("cursor", "");
-
+                $.event.trigger({type: "content_loadfail.pushnav", transition: $(opts.target)});
                 if(settings.debug) History.log("Pushnav :: The content content could not be downloaded");
             }
         });
@@ -327,7 +328,8 @@
         fromId = $data;
         $from = opts.data;
 
-        $(window).trigger("content_change.pushnav");
+
+        $.event.trigger({type: "content_change.pushnav"});
         reEnhanceAjaxLink(opts.url);
 
     }
