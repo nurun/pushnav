@@ -14,7 +14,9 @@
         defaultTarget: ".pushnav-defaulttarget",
         stopPropagation: false,
         disableNotModern: false,
-        debug: false
+        debug: false,
+        loadingSelector: "body",
+        loadingClass: "pushnav-loading"
     };
 
 
@@ -32,9 +34,9 @@
 
     $.pushnav = function (opts) {
         $.extend(settings, opts);
-         isActive = isActivePushnav();
+        isActive = isActivePushnav();
 
-       if (isActive) {
+        if (isActive) {
             fromUrl = window.location.href;
             init();
         }
@@ -53,15 +55,28 @@
         return $.pushnav;
     };
 
-    $.pushnav.attach = function (links, target) {
+    /**
+     *
+     * @param selector                = element selector
+     * @param event                   = jquery event : click, change, focus
+     * @param target                  = container to replace
+     * @param getLink (optional)      = function to get the destination url : this function must return a url
+     * @returns {pushnav}
+     */
+
+    $.pushnav.attach = function (selector, target, event, getLink) {
+        var event = (typeof event =="undefined") ? "click" : event;
 
         if (isActive) {
-            $("body").delegate(links,"click", function (e) {
-                ajaxLinksOnClick(e, target);
+            $("body").delegate(selector, event, function (evt) {
+                evt.preventDefault();
+                ajaxLinksOnClick(evt, target, getLink);
             });
         }
         return $.pushnav;
     };
+
+
 
     function Transition(from, to, handler) {
         this.from = from;
@@ -123,6 +138,7 @@
     function createEvents() {
 
         $(window).bind('statechange',function(){
+
             var State = History.getState();
             if(settings.debug) History.log('statechange:', State.data, State.title, State.url);
 
@@ -130,17 +146,12 @@
             // (ex: first: product-section.html and the second trigger : product-section.html?expander1=true
             //      We don't want reload the page because it's just new query                               )
 
-            var target= State.data.target,
-                url= State.url,
+            var url= State.url,
                 urlClean =  getUrlToClean(State.url),
-                oldUrlClean = getUrlToClean(oldStateUrl);   // Remove the query argument;
+                oldUrlClean = getUrlToClean(oldStateUrl),   // Remove the query argument;
+                target =  $(State.data.target).length > 0 ?  State.data.target :  settings.defaultTarget;
 
             if (oldUrlClean !== urlClean) {
-                if($(State.data.target).length > 0) {
-                    target= State.data.target;
-                } else {
-                    target = settings.defaultTarget;
-                }
                 onStateChange(url,target);
             }
 
@@ -148,7 +159,8 @@
 
         $(window).bind("anchorchange", function(event, params) {
             var State = History.getState();
-            if(settings.debug)  History.log('Hash change:', State.data, State.title, State.url);
+            //if(settings.debug)  History.log('Hash change:', State.data, State.title, State.url);
+            History.log('Hash change:', State.data, State.title, State.url);
 
             var newUrl;
 
@@ -177,14 +189,36 @@
         $("body").delegate("[data-ajax-target]","click", ajaxLinksOnClick);
         createEvents();
         reEnhanceAjaxLink(window.location.href);
+        loadInitContentIsNotModernBrowser() ;
     }
 
-    function ajaxLinksOnClick(evt, target) {
+    function loadInitContentIsNotModernBrowser() {
+        // If the user reload the page or load a page that he bookmarked
+        // we want to load the real content and replace the content in the page
+        // ( ex: http://127.0.0.1:3000/commerce#commerce/charcuterie ,
+        //       we gonna load the page Charcuterie to replace the page commerce loaded initially)
+        if(!isModern) {
+            var State = History.getState(),
+                urlBrowser = getUrlToClean(window.location.href),
+                urlHistory =  getUrlToClean(State.url),
+                url =  State.url,
+                data =  State.data,
+                target = ($(State.data.target).length > 0) ? State.data.target : settings.defaultTarget;
+
+            if(urlHistory != urlBrowser) {
+                onStateChange(url,target);
+            }
+        }
+    }
+
+    function ajaxLinksOnClick(evt, target, getLink) {
         evt.preventDefault();
-        
+
+
         var $current =  $(evt.currentTarget),
-            url = $current.attr("href"),
-            target = target || $current.attr("data-ajax-target") ;
+            url = (typeof getLink !== 'undefined') ? getLink(evt): $current.attr("href"),
+            target = target || $current.attr("data-ajax-target");
+
 
         if($(target).length > 0) {
             oldStateUrl = History.getState().url;
@@ -196,12 +230,12 @@
         if (settings.stopPropagation) {
             evt.stopPropagation();
             return false;
-        } 
-        
+        }
+
     }
 
     function onStateChange(url,target) {
-        $(window).trigger("state_change.pushnav");
+        $.event.trigger({type: "state_change.pushnav"});
         loadNewContent({url:url, target:target});
         oldStateUrl = url;
     }
@@ -253,21 +287,27 @@
 
     function loadNewContent(opts) {
 
-        var url = encodeURI(opts);
+        var url = encodeURI(opts.url),
+            $loader = $(settings.loadingSelector),
+            loaderClass = settings.loadingClass;
+
+        $.event.trigger({type: "content_startloading.pushnav"});
+
         $.ajax({
             url: url,
             dataType: "html",
             beforeSend: function(xhr) {
-                $("body").addClass("pushNav-loading");
+                $loader.addClass(loaderClass);
             },
             success: function(data) {
-                $("body").removeClass("pushNav-loading");
+                $.event.trigger({type: "content_loadingcompleted.pushnav"});
+                $loader.removeClass(loaderClass);
                 data = $("<div>"+getDocumentHtml(data,opts.url)+"</div>");
                 opts.data = data;
                 handleNewContent(opts);
             }, error: function(/*jqXHR, textStatus, errorThrown*/) {
                 $("body").css("cursor", "");
-
+                $.event.trigger({type: "content_loadingfail.pushnav", transition: $(opts.target)});
                 if(settings.debug) History.log("Pushnav :: The content content could not be downloaded");
             }
         });
@@ -313,7 +353,8 @@
         fromId = $data;
         $from = opts.data;
 
-        $(window).trigger("content_change.pushnav");
+
+        $.event.trigger({type: "content_change.pushnav"});
         reEnhanceAjaxLink(opts.url);
 
     }
@@ -412,7 +453,7 @@
         // Prepare
         var result = String(html)
             .replace(/<\!DOCTYPE[^>]*>/i, '')
-            .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div class="document-$1"$2')
+            .replace(/<(html|head|body|title|meta)([\s\>])/gi,'<div data-pushnav-htmltag="$1"$2')
             .replace(/<\/(html|head|body|title|meta)\>/gi,'</div>');
 
         // Fix For IE7, it replaces relative path to absolute.
