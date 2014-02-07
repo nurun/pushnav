@@ -14,8 +14,8 @@
 	 * @param transition
 	 */
 	function adjustMainMenu(transition) {
-		var category = transition.newContentRaw.find(".document-body").data("category");
-		if (category) {
+		var category = transition.newContentRaw.find("[data-pushnav-htmltag='body']").data("category");
+        if (category) {
 			$("#nav li").removeClass("active");
 			$("#nav li[data-category='" + category + "']").addClass("active");
 		}
