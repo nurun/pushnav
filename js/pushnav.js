@@ -36,6 +36,12 @@
         $.extend(settings, opts);
         isActive = isActivePushnav();
 
+        // Log Initial State
+        if(settings.debug) {
+            var State = History.getState();
+            History.log('initial:', State.data, State.title, State.url);
+        }
+
         if (isActive) {
             fromUrl = window.location.href;
             init();
@@ -109,11 +115,6 @@
     /***********************************************************************************
      * DATA MODEL OBJECT
      **********************************************************************************/
-    // Log Initial State
-    if(settings.debug) {
-        var State = History.getState();
-        History.log('initial:', State.data, State.title, State.url);
-    }
 
 
     function UrlBuild (data) {
